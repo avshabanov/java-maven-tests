@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+    <title>Hi from Book Store!</title>
+</head>
+<body>
+    <h1>Hello!</h1>
+    <p id="j-out">If you see this, you need to enable javascript</p>
+    <pre id="j-books">If you see this for a long time, your JS failed</pre>
+
+    <script type="text/javascript">
+        function changeContent() {
+            var $e = document.getElementById("j-out");
+            $e.textContent = "Ajax books:";
+        }
+
+        function getAllBooks() {
+            var $e = document.getElementById("j-books");
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/api/book");
+            xhr.onload = function (e) {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        console.log(xhr.responseText);
+                        var books = JSON.parse(xhr.responseText);
+                        $e.textContent = JSON.stringify(books, null, 2);
+                    } else {
+                        console.error(xhr.statusText);
+                    }
+                }
+            };
+            xhr.onerror = function (e) {
+                console.error(xhr.statusText);
+            };
+            xhr.send(null);
+        }
+
+        window.onload = function () {
+            changeContent();
+            getAllBooks();
+        }
+    </script>
+</body>
+</html>
