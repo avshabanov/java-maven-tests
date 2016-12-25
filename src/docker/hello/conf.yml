@@ -1,0 +1,6 @@
+
+packaging:
+  add:
+    - target/hello-app-${project.version}-jar-with-dependencies.jar
+
+tag: hello-app
