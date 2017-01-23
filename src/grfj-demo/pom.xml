@@ -1,0 +1,245 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.alexshabanov.demo</groupId>
+  <artifactId>grfj-demo</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>Guice+RestEasy+Freemarker+Jetty Web Application</name>
+
+  <properties>
+    <launcher.mainClass>com.alexshabanov.grfj.GrfjDemoMain</launcher.mainClass>
+
+    <!-- common libraries -->
+    <slf4j.version>1.7.21</slf4j.version>
+
+    <jetty.version>9.4.0.v20161208</jetty.version>
+
+    <resteasy.version>3.0.18.Final</resteasy.version>
+
+    <brikar.version>1.8.32</brikar.version>
+
+    <!-- Guice -->
+    <guice.version>4.1.0</guice.version>
+
+    <!-- Protocol Buffers -->
+    <protobuf.version>3.1.0</protobuf.version>
+    <protobuf-maven-plugin.version>0.5.0</protobuf-maven-plugin.version>
+    <protobuf-jaxrs.version>1.0.2</protobuf-jaxrs.version>
+
+    <!--  compiler settings -->
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+
+    <!-- encoding -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  </properties>
+
+  <dependencies>
+    <!-- Logging -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.1.2</version>
+    </dependency>
+
+    <!-- Protobuf -->
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>${protobuf.version}</version>
+    </dependency>
+
+    <!-- Standard Errors -->
+    <dependency>
+      <groupId>com.truward.brikar</groupId>
+      <artifactId>brikar-error-response</artifactId>
+      <version>${brikar.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.truward.protobuf</groupId>
+      <artifactId>protobuf-jaxrs</artifactId>
+      <version>${protobuf-jaxrs.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.truward.protobuf</groupId>
+      <artifactId>protobuf-jaxrs-jackson</artifactId>
+      <version>${protobuf-jaxrs.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.truward.orion</groupId>
+      <artifactId>user-service-model</artifactId>
+      <version>1.0.5</version>
+    </dependency>
+
+    <!-- Freemarker -->
+    <dependency>
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
+      <version>2.3.23</version>
+    </dependency>
+
+    <!-- Guice -->
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <version>${guice.version}</version>
+    </dependency>
+    <!--&lt;!&ndash; Guice Servlet Extension &ndash;&gt;-->
+    <!--<dependency>-->
+      <!--<groupId>com.google.inject.extensions</groupId>-->
+      <!--<artifactId>guice-resource</artifactId>-->
+      <!--<version>${guice.version}</version>-->
+    <!--</dependency>-->
+
+    <!-- Jetty -->
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-server</artifactId>
+      <version>${jetty.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-servlet</artifactId>
+      <version>${jetty.version}</version>
+    </dependency>
+
+    <!-- RestEasy -->
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jaxrs</artifactId>
+      <version>${resteasy.version}</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>httpclient</artifactId>
+          <groupId>org.apache.httpcomponents</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>jcip-annotations</artifactId>
+          <groupId>net.jcip</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-guice</artifactId>
+      <version>${resteasy.version}</version>
+    </dependency>
+
+    <!-- FindBugs - JSR-305 for @Nonnull etc. -->
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>3.0.1</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- test scope -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>1.10.19</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <extensions>
+
+      <!-- OS version for protoc plugin -->
+      <extension>
+        <groupId>kr.motd.maven</groupId>
+        <artifactId>os-maven-plugin</artifactId>
+        <version>1.4.1.Final</version>
+      </extension>
+    </extensions>
+
+    <plugins>
+      <!-- Execution from the command line - mvn exec:java starts the server -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.4.0</version>
+        <configuration>
+          <mainClass>${launcher.mainClass}</mainClass>
+        </configuration>
+      </plugin>
+
+      <!-- Protobuf Compilation -->
+      <plugin>
+        <groupId>org.xolstice.maven.plugins</groupId>
+        <artifactId>protobuf-maven-plugin</artifactId>
+        <configuration>
+          <protoSourceRoot>../rest-demo-model</protoSourceRoot>
+        </configuration>
+
+        <version>${protobuf-maven-plugin.version}</version>
+        <extensions>true</extensions>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>test-compile</goal>
+            </goals>
+            <configuration>
+              <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>assembly</id>
+
+      <build>
+        <plugins>
+          <!-- Assembly Plugin -->
+          <plugin>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>1.4</version>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>shade</goal>
+                </goals>
+                <configuration>
+                  <createDependencyReducedPom>true</createDependencyReducedPom>
+                  <transformers>
+                    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                      <mainClass>${launcher.mainClass}</mainClass>
+                    </transformer>
+                  </transformers>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>
