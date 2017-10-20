@@ -37,10 +37,21 @@
             <!-- optional: default phase is "generate-resources" -->
             <phase>generate-resources</phase>
           </execution>
+
+          <execution>
+            <id>npm install</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <!--<configuration>-->
+              <!--<arguments>run-script build</arguments>-->
+            <!--</configuration>-->
+          </execution>
         </executions>
 
         <configuration>
-          <nodeVersion>v4.6.0</nodeVersion>
+          <nodeVersion>v8.7.0</nodeVersion>
         </configuration>
       </plugin>
     </plugins>
