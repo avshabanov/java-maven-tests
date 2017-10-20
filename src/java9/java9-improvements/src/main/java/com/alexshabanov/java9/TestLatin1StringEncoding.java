@@ -1,7 +1,5 @@
 package com.alexshabanov.java9;
 
-import javafx.util.Pair;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -16,9 +14,9 @@ public final class TestLatin1StringEncoding {
 
   public static void main(String[] args) {
     final List<String> strings = new ArrayList<>(ITERATIONS);
+    final StrAllocator allocator = new StrAllocator();
     final long total1 = Runtime.getRuntime().totalMemory();
     final long free1 = Runtime.getRuntime().freeMemory();
-    final StrAllocator allocator = new StrAllocator();
     for (int i = 0; i < ITERATIONS; ++i) {
       strings.add(demo(allocator));
     }
