@@ -36,7 +36,7 @@
     "copy-all": "npm run copy-assets && npm run copy-root && npm run copy-bootstrap",
     "build": "npm run prepare && npm run build-js && npm run build-css && npm run copy-all",
     "test": "jest",
-    "preinstall": "npm run build"
+    "postinstall": "npm run build"
   },
   "jest": {
     "modulePathIgnorePatterns": [
