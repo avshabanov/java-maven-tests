@@ -42,10 +42,10 @@
     "modulePathIgnorePatterns": [
       "/node_modules/"
     ],
-    "preprocessorIgnorePatterns": [
+    "transformIgnorePatterns": [
       "/node_modules/"
     ],
-    "testPathDirs": [
+    "roots": [
       "<rootDir>/js"
     ]
   }
