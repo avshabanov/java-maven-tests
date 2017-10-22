@@ -1,2 +1,3 @@
 
-Illustration of ``https://github.com/eirslett/frontend-maven-plugin``
+Illustration of use of ``https://github.com/eirslett/frontend-maven-plugin``.
+
