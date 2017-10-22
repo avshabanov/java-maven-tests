@@ -1,11 +1,14 @@
 {
   "private": true,
+
   "main": "js/main.js",
+
   "dependencies": {
     "jquery": "3.2.1",
     "bootstrap": "3.3.7",
     "query-string": "5.0.0"
   },
+
   "devDependencies": {
     "babelify": "7.3.0",
     "babel-preset-es2015": "6.24.1",
@@ -17,11 +20,13 @@
     "browserify": "14.5.0",
     "uglify-js": "3.1.4"
   },
+
   "config": {
     "libs": "target/release/nodeMavenJavaWebsite/web/static/assets/libs",
     "static_root": "target/release/nodeMavenJavaWebsite/web/static",
     "assets": "target/release/nodeMavenJavaWebsite/web/static/assets"
   },
+
   "scripts": {
     "build-js-dev": "browserify js/main.js -t babelify -o $npm_package_config_assets/js/bundle.js",
     "watch-js": "watchify js/main.js -o $npm_package_config_assets/js/bundle.js -v -d -t babelify",
@@ -38,15 +43,10 @@
     "test": "jest",
     "postinstall": "npm run build"
   },
+
   "jest": {
-    "modulePathIgnorePatterns": [
-      "/node_modules/"
-    ],
-    "transformIgnorePatterns": [
-      "/node_modules/"
-    ],
-    "roots": [
-      "<rootDir>/js"
-    ]
+    "modulePathIgnorePatterns": ["/node_modules/"],
+    "transformIgnorePatterns": ["/node_modules/"],
+    "roots": ["<rootDir>/js"]
   }
 }
