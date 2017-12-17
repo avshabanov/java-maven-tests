@@ -24,15 +24,24 @@ SR ?= ${PWD}/../target/generated-certificates/server
 # Client certificate and key, uses Intermediate Authority 2 (I2)
 CL ?= ${PWD}/../target/generated-certificates/client
 
-KEYSTORE_PASSWORD := $(shell cat ${PASSWORDS}/server-key.txt)
+SERVER_KEYSTORE_PASSWORD := $(shell cat ${PASSWORDS}/server-key.txt)
+CLIENT_KEYSTORE_PASSWORD := $(shell cat ${PASSWORDS}/client-key.txt)
 
 .PHONY: all
 
 
-all: ${SR}/keystore.jks
+all: ${R}/certs/truststore.p12 ${SR}/keystore.p12 ${CL}/keystore.p12
 
 
 # Root CA
+
+${R}/certs/truststore.p12: ${R}/certs/ca.cert.pem
+	openssl pkcs12 -export \
+		-inkey ${R}/private/ca.key.pem \
+		-in ${R}/certs/ca.cert.pem \
+		-passin file:${PASSWORDS}/root-ca-key.txt \
+		-passout file:${PASSWORDS}/truststore-key.txt \
+		-out ${R}/certs/truststore.p12
 
 # Generate CA certificate along with the files, required for signing
 ${R}/certs/ca.cert.pem: ${R}/certs ${R}/private/ca.key.pem ${R}/openssl.conf ${R}/index.txt ${R}/serial ${R}/newcerts
@@ -92,15 +101,7 @@ ${I2}/certs/ca-chain.cert.pem: ${R}/certs/ca.cert.pem
 		ICA_PASSWORD_FILE=${PASSWORDS}/intermediate-ca-2-key.txt
 
 
-# Server Certificate
-
-# NOTE extension type: usr_cert and CN
-
-${SR}/keystore.jks: ${SR}/keystore.p12
-	keytool -importkeystore \
-		-destkeystore ${SR}/keystore.jks -deststoretype jks -deststorepass ${KEYSTORE_PASSWORD} \
-		-srckeystore ${SR}/keystore.p12 -srcstoretype pkcs12 -srcstorepass ${KEYSTORE_PASSWORD}
-
+# Server Certificate (note CN and extensions=server_cert)
 
 # cert-chain.pem + key.pem and cert-chain.p12 are interchangeable, use p12 for java
 ${SR}/keystore.p12: ${SR}/cert-chain.pem
@@ -108,12 +109,12 @@ ${SR}/keystore.p12: ${SR}/cert-chain.pem
 		-inkey ${SR}/key.pem \
 		-in ${SR}/cert-chain.pem \
 		-passin file:${PASSWORDS}/server-key.txt \
-		-passout pass:${KEYSTORE_PASSWORD} \
+		-passout pass:${SERVER_KEYSTORE_PASSWORD} \
 		-name jetty \
 		-out ${SR}/keystore.p12
 
 ${SR}/cert-chain.pem: ${SR}/cert.pem
-	cat ${I1}/certs/ca.cert.pem ${SR}/cert.pem > ${SR}/cert-chain.pem
+	cat ${SR}/cert.pem ${I1}/certs/ca.cert.pem > ${SR}/cert-chain.pem
 
 ${SR}/cert.pem: ${SR}/csr.pem
 	openssl ca -config ${I1}/openssl.conf \
@@ -138,6 +139,45 @@ ${SR}/key.pem: ${SR}
 
 ${SR}:
 	mkdir -p ${SR}
+
+# Client Certificate (note CN and extensions=usr_cert)
+
+# cert-chain.pem + key.pem and cert-chain.p12 are interchangeable, use p12 for java
+${CL}/keystore.p12: ${CL}/cert-chain.pem
+	openssl pkcs12 -export \
+		-inkey ${CL}/key.pem \
+		-in ${CL}/cert-chain.pem \
+		-passin file:${PASSWORDS}/client-key.txt \
+		-passout pass:${CLIENT_KEYSTORE_PASSWORD} \
+		-name client \
+		-out ${CL}/keystore.p12
+
+${CL}/cert-chain.pem: ${CL}/cert.pem
+	cat ${CL}/cert.pem ${I2}/certs/ca.cert.pem > ${CL}/cert-chain.pem
+
+${CL}/cert.pem: ${CL}/csr.pem
+	openssl ca -config ${I2}/openssl.conf \
+		-batch \
+		-extensions usr_cert \
+		-days 720 -notext -md sha256 \
+		-passin file:${PASSWORDS}/intermediate-ca-2-key.txt \
+		-in ${CL}/csr.pem \
+		-out ${CL}/cert.pem
+
+${CL}/csr.pem: ${CL}/key.pem ${I2}/certs/ca-chain.cert.pem
+	openssl req -config ${I2}/openssl.conf \
+		-key ${CL}/key.pem -passin file:${PASSWORDS}/client-key.txt \
+		-batch \
+		-subj "/C=US/ST=WA/O=mTLS Demo by Alex Shabanov/CN=sample-tls-client" \
+		-new -sha256 -out ${CL}/csr.pem
+
+${CL}/key.pem: ${CL}
+	openssl genrsa -aes256 \
+		-passout file:${PASSWORDS}/client-key.txt \
+		-out ${CL}/key.pem ${CERT_KEY_LENGTH}
+
+${CL}:
+	mkdir -p ${CL}
 
 # Auxiliary commands
 

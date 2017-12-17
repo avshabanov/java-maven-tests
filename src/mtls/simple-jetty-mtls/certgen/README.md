@@ -45,6 +45,7 @@ Approach 2 (validate whole server cert chain)
 
 ```bash
 openssl verify -CAfile $G/root-ca/certs/ca.cert.pem $G/server/cert-chain.pem
+openssl verify -CAfile $G/root-ca/certs/ca.cert.pem $G/client/cert-chain.pem
 ```
 
 ### Live verification of the server cert
@@ -55,6 +56,13 @@ openssl rsa -check -in $G/server/key.pem -passin file:./certgen/passwords/server
 
 # In Terminal 2:
 curl --cacert $G/root-ca/certs/ca.cert.pem https://localhost:8443/
+```
+
+### Verify Mutual TLS
+
+```bash
+openssl rsa -check -in $G/client/key.pem -passin file:./certgen/passwords/client-key.txt > /tmp/raw-client-key.pem
+curl --cacert $G/root-ca/certs/ca.cert.pem --cert $G/client/cert-chain.pem --key /tmp/raw-client-key.pem https://localhost:8443/
 ```
 
 ### Check RSA Passphrase

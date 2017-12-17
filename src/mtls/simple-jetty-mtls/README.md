@@ -13,3 +13,7 @@ at the very beginning of HTTPS interaction.
 
 See [README.md](x509/README.md) in the x509 folder to understand how to generate x509 certificates for both client
 and server.
+
+Run ``make -C certgen`` prior to building java project to create certs (don't wipe target folder once you generate certs!).
+
+Then run ``Main`` class with the following arguments: ``-clientMode MUTUAL_TLS -serverAuthMode REQUIRE``.
