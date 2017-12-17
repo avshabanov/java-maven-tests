@@ -51,7 +51,7 @@ openssl verify -CAfile $G/root-ca/certs/ca.cert.pem $G/server/cert-chain.pem
 
 ```bash
 # In Terminal 1:
-python ./certgen/scripts/test-server.py
+openssl rsa -check -in $G/server/key.pem -passin file:./certgen/passwords/server-key.txt > /tmp/server-key.pem && python ./certgen/scripts/test-server.py
 
 # In Terminal 2:
 curl --cacert $G/root-ca/certs/ca.cert.pem https://localhost:8443/
