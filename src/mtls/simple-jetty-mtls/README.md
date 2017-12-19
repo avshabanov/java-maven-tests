@@ -16,4 +16,8 @@ and server.
 
 Run ``make -C certgen`` prior to building java project to create certs (don't wipe target folder once you generate certs!).
 
-Then run ``Main`` class with the following arguments: ``-clientMode MUTUAL_TLS -serverAuthMode REQUIRE``.
+Then run ``Main`` class with the following arguments:
+
+```bash
+mvn exec:java -Dexec.args="-clientMode MUTUAL_TLS -serverAuthMode REQUIRE"
+```
