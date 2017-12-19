@@ -10,7 +10,7 @@ httpd.socket = ssl.wrap_socket(
         server_side=True,
         certfile='./target/generated-certificates/server/cert.pem',
         ca_certs='./target/generated-certificates/i1-ca/certs/ca-chain.cert.pem',
-        keyfile='/tmp/server-key.pem')
+        keyfile='/tmp/raw-server-key.pem')
 
 httpd.serve_forever()
 

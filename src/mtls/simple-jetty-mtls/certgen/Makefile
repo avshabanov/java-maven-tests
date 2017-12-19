@@ -88,6 +88,7 @@ ${I1}/certs/ca-chain.cert.pem: ${R}/certs/ca.cert.pem
 		ICA=${I1} \
 		PASSWORDS=${PASSWORDS} \
 		CN=mTLS-Demo-Intermediate-CA-1 \
+		CA_KEY_LENGTH=${CA_KEY_LENGTH} \
 		ICA_PASSWORD_FILE=${PASSWORDS}/intermediate-ca-1-key.txt
 
 # Intermediate CA 2
@@ -98,8 +99,8 @@ ${I2}/certs/ca-chain.cert.pem: ${R}/certs/ca.cert.pem
 		ICA=${I2} \
 		PASSWORDS=${PASSWORDS} \
 		CN=mTLS-Demo-Intermediate-CA-2 \
+		CA_KEY_LENGTH=${CA_KEY_LENGTH} \
 		ICA_PASSWORD_FILE=${PASSWORDS}/intermediate-ca-2-key.txt
-
 
 # Server Certificate (note CN and extensions=server_cert)
 
