@@ -65,6 +65,8 @@ openssl rsa -check -in $G/client/key.pem -passin file:./certgen/passwords/client
 curl --cacert $G/root-ca/certs/ca.cert.pem --cert $G/client/cert-chain.pem --key /tmp/raw-client-key.pem https://localhost:8443/
 ```
 
+NOTE: Mac OS X stock ``curl`` does not support PEM (at least it doesn't as of macOS Sierra).
+
 ### Check RSA Passphrase
 
 ```bash
