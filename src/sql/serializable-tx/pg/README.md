@@ -32,10 +32,14 @@ Then open two psql sessions and run sequentially:
 START TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 -- Don't proceed further until this line executed in both sessions
 
+-- Limit lock timeout (120 milliseconds - this allows transaction to fail sooner rather than later):
+--SET LOCAL lock_timeout = '120ms';
+
 UPDATE orders SET total_amount = total_amount + 5 WHERE order_id = 1;
 -- Note, that second update blocks until other transaction commited or rolled back.
 
 COMMIT;
+-- or - ROLLBACK;
 ```
 
 
