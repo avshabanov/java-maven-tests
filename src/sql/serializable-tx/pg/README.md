@@ -23,6 +23,7 @@ CREATE TABLE orders (
 );
 
 INSERT INTO orders (order_id, friendly_name, total_amount, updated) VALUES (1, 'test', 20, 1045);
+INSERT INTO orders (order_id, friendly_name, total_amount, updated) VALUES (2, 'test2', 40, 1310);
 ```
 
 Then open two psql sessions and run sequentially:
