@@ -68,20 +68,29 @@ public class VersionedObject<T extends VersionAware> {
   @NonNull public String toJson() throws IOException {
     // set payload
     final ObjectNode result = MAPPER.valueToTree(payload);
-
     // set non-overridden fields
-    for (Iterator<String> it = rawTree.fieldNames(); it.hasNext();) {
-      final String fieldName = it.next();
-      final JsonNode otherNode = result.get(fieldName);
-      if (otherNode != null) {
-        continue;
-      }
-      result.set(fieldName, rawTree.get(fieldName));
-    }
-
+    merge(result, rawTree);
     // set actual version
     result.set(VERSION_FIELD, new IntNode(payload.getVersion()));
 
     return MAPPER.writeValueAsString(result);
+  }
+
+  private static void merge(JsonNode to, JsonNode from) {
+    if (!to.isObject() || !from.isObject()) {
+      return;
+    }
+
+    final ObjectNode toObj = (ObjectNode) to;
+    for (Iterator<String> it = from.fieldNames(); it.hasNext();) {
+      final String fieldName = it.next();
+      final JsonNode fieldValue = toObj.get(fieldName);
+      final JsonNode prevValue = from.get(fieldName);
+      if (fieldValue != null) {
+        merge(fieldValue, prevValue);
+        continue;
+      }
+      toObj.set(fieldName, prevValue);
+    }
   }
 }

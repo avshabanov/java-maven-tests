@@ -13,6 +13,27 @@ import lombok.Value;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * This demonstrates how Jackson could be used to implement a version-aware persistence logic.
+ *
+ * Problem:
+ * An evolving application that serializes data to the database using JSON serialization must solve the problem of
+ * dealing with evolving schema, so that newly deployed application version may refer to a schema that includes new
+ * fields (and possibly excludes old ones). During deployment it is possible to have both old and new versions of
+ * the application working side by side, it is also possible that new release would be rolled back and old version
+ * of an application would have to deal with the newly recorded data that corresponds to the updated schema.
+ *
+ * If application logic permits old application version to marshal the data corresponding to a new version, it has
+ * to deal with the fact, that data might have new fields that old application does not recognize.
+ *
+ * In order to not to lose the data in this situation, it is proposed to maintain a version and make persistence logic
+ * aware of unknown fields, so that when application serializes a recently fetched object corresponding to a new schema
+ * it would retain unknown fields just in the same way database would do the same for queries from the old version of
+ * an application that doesn't touch unknown optional fields.
+ *
+ * If application logic does not permit working with the updated version, an old version of an application must fail
+ * fast and skip processing of such objects. This too could be done by matching a version to certain known one.
+ */
 public class Main {
 
   @Value
@@ -21,7 +42,7 @@ public class Main {
   public static class FooV1_1 implements VersionAware {
 
     // version components
-    public static final int VERSION = 11;
+    public static final int VERSION = 1_001;
     @Override @JsonIgnore public int getVersion() { return VERSION; }
 
     // fields
@@ -39,7 +60,7 @@ public class Main {
   public static class FooV1_2 implements VersionAware {
 
     // version components
-    public static final int VERSION = 12;
+    public static final int VERSION = 1_002;
     @Override @JsonIgnore public int getVersion() { return VERSION; }
 
     // fields
