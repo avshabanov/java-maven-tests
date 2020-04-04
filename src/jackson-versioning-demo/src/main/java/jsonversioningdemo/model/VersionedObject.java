@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.Iterator;
 
 /**
- * Base class for versioned objects
+ * Domain object for versioned objects.
  */
 @Value
 public class VersionedObject<T extends VersionAware> {
@@ -30,18 +30,47 @@ public class VersionedObject<T extends VersionAware> {
   @NonNull T payload;
   @NonNull JsonNode rawTree;
 
+  /**
+   * Creates new versioned object off of versioned payload.
+   *
+   * @param payload Payload
+   * @param <T> Payload type
+   * @return Versioned object instance
+   */
   @NonNull public static <T extends VersionAware> VersionedObject<T> of(@NonNull T payload) {
     return new VersionedObject<>(payload.getVersion(), payload, MAPPER.createObjectNode());
   }
 
+  /**
+   * Attaches new payload to the object. Suitable for update scenarios.
+   *
+   * @param payload Payload
+   * @param <Tv2> New payload type
+   * @return Versioned object instance
+   */
   @NonNull public <Tv2 extends VersionAware> VersionedObject<Tv2> join(@NonNull Tv2 payload) {
     return new VersionedObject<>(version, payload, rawTree);
   }
 
+  /**
+   * Reads object from JSON.
+   */
   @NonNull public static <T extends VersionAware> VersionedObject<T> fromJson(
       @NonNull String content,
       @NonNull Class<T> payloadClass,
       int minVersion
+  ) throws IOException {
+    return fromJson(content, payloadClass, minVersion, Integer.MAX_VALUE);
+  }
+
+  /**
+   * Reads object from JSON.
+   */
+  @NonNull public static <T extends VersionAware> VersionedObject<T> fromJson(
+      @NonNull String content,
+      @NonNull Class<T> payloadClass,
+      int minVersion,
+      int maxVersion
   ) throws IOException {
     final JsonNode raw = MAPPER.readTree(content);
     final JsonNode versionNode = raw.get(VERSION_FIELD);
@@ -55,16 +84,20 @@ public class VersionedObject<T extends VersionAware> {
       version = versionNode.asInt();
     }
 
-    if (minVersion > version) {
-      throw new IOException("Version mismatch, expected to be at least " + minVersion + " in " + raw);
+    if (minVersion > version || maxVersion < version) {
+      throw new IOException(String.format("Version mismatch, expected to be in (%d, %d) got %d in %s",
+          minVersion, maxVersion, version, raw));
     }
 
     // recover actual payload
     final T payload = MAPPER.treeToValue(raw, payloadClass);
 
-    return new VersionedObject<T>(version, payload, raw);
+    return new VersionedObject<>(version, payload, raw);
   }
 
+  /**
+   * Converts versioned object to JSON.
+   */
   @NonNull public String toJson() throws IOException {
     // set payload
     final ObjectNode result = MAPPER.valueToTree(payload);
