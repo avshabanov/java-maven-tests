@@ -4,7 +4,7 @@
   "main": "js/main.js",
 
   "dependencies": {
-    "jquery": "3.2.1",
+    "jquery": "3.5.0",
     "bootstrap": "3.3.7",
     "query-string": "5.0.0"
   },
