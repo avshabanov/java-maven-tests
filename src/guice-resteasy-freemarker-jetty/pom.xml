@@ -14,7 +14,7 @@
     <!-- common libraries -->
     <slf4j.version>1.7.21</slf4j.version>
 
-    <jetty.version>9.3.10.v20160621</jetty.version>
+    <jetty.version>9.4.27.v20200227</jetty.version>
 
     <resteasy.version>3.0.18.Final</resteasy.version>
 
