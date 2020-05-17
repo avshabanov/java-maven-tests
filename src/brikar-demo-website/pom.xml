@@ -14,7 +14,7 @@
     <commons-logging.version>1.1.1</commons-logging.version>
 
     <spring.version>3.2.14.RELEASE</spring.version>
-    <spring-security.version>3.2.3.RELEASE</spring-security.version>
+    <spring-security.version>5.3.1.RELEASE</spring-security.version>
 
     <user-service.version>1.0.1</user-service.version>
 
