@@ -8,7 +8,7 @@
     <name>spring-mvc-sec Maven Webapp</name>
     <url>http://maven.apache.org</url>
     <properties>
-        <spring.version>2.5.5</spring.version>
+        <spring.version>5.2.7.RELEASE</spring.version>
         <spring.security.version>2.0.2</spring.security.version>
         <servlet-api.version>2.5</servlet-api.version>
         <jstl.version>1.1.2</jstl.version>
