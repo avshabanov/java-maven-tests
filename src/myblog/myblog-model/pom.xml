@@ -21,7 +21,7 @@
         <junit.version>4.7</junit.version>
 
         <commons-dbcp.version>1.4</commons-dbcp.version>
-        <commons-collections.version>3.2.1</commons-collections.version>
+        <commons-collections.version>3.2.2</commons-collections.version>
 
         <aspectj.version>1.6.9</aspectj.version>
 
