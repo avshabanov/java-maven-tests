@@ -32,7 +32,7 @@
         <gwtmod.version>4.0.1</gwtmod.version>
 
         <!-- common libraries dependencies -->
-        <junit.version>4.7</junit.version>
+        <junit.version>4.13.1</junit.version>
 
         <!-- gwt version -->
         <gwt.version>2.1.0</gwt.version>
