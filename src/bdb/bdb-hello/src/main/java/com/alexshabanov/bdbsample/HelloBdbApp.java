@@ -1,5 +1,6 @@
 package com.alexshabanov.bdbsample;
 
+import com.google.common.io.BaseEncoding;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -7,7 +8,6 @@ import com.sleepycat.je.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.File;
 import java.io.IOException;
 
@@ -23,6 +23,10 @@ public final class HelloBdbApp implements Runnable {
     } catch (Exception e) {
       log.error("RunDB error", e);
     }
+  }
+
+  private static String toHexString(byte[] bytes) {
+    return BaseEncoding.base16().lowerCase().encode(bytes);
   }
 
   private void runDb() throws Exception {
@@ -67,7 +71,7 @@ public final class HelloBdbApp implements Runnable {
   }
 
   private static String toHexString(DatabaseEntry entry) {
-    return (entry != null && entry.getData() != null) ? ("0x" + DatatypeConverter.printHexBinary(entry.getData())) :
+    return (entry != null && entry.getData() != null) ? ("0x" + toHexString(entry.getData())) :
         "<null>";
   }
 

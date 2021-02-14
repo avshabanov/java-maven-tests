@@ -35,3 +35,36 @@ OPTIMISTIC_ABOUT_FILE_LOCKING=1
 ```bash
 cat source | grep -e "^{" > /tmp/samplelog.json
 ```
+
+## Basic Searches
+
+Tabular form:
+
+```
+sourcetype="access_combined_wcookie" status=200 file="success.do"  | table action JSESSIONID status | rename JSESSIONID as "User Session"
+```
+
+Number of sessions per IP:
+
+```
+sourcetype="access_combined_wcookie"| stats dc(JSESSIONID) as Logins by clientip
+```
+
+Same, with number of logins, in decreasing order:
+
+```
+sourcetype="access_combined_wcookie"| stats dc(JSESSIONID) as Logins by clientip | sort by - Logins
+```
+
+Total bytes served:
+
+```
+sourcetype="access_combined_wcookie" | stats sum(bytes) as TotalBytes
+sourcetype="access_combined_wcookie" | stats sum(bytes) as TotalBytesPerFile by file | sort by - TotalBytesPerFile
+```
+
+Time to complete (avg):
+
+```
+sourcetype="db_audit" | stats avg(Duration) as TimeToComplete by Command | sort by - TimeToComplete
+```

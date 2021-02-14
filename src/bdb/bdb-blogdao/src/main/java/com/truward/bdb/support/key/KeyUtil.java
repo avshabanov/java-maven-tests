@@ -1,10 +1,10 @@
 package com.truward.bdb.support.key;
 
+import com.google.common.io.BaseEncoding;
 import com.google.protobuf.ByteString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.bind.DatatypeConverter;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -57,7 +57,7 @@ public final class KeyUtil {
 
     @SuppressWarnings("StringBufferReplaceableByString")
     final StringBuilder result = new StringBuilder(2 + arr.length * 2);
-    result.append('<').append(DatatypeConverter.printHexBinary(arr)).append('>');
+    result.append('<').append(BaseEncoding.base16().lowerCase().encode(arr)).append('>');
     return result.toString();
   }
 
