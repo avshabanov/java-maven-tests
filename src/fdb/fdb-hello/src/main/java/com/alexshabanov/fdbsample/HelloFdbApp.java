@@ -2,6 +2,7 @@ package com.alexshabanov.fdbsample;
 
 import com.apple.foundationdb.Database;
 import com.apple.foundationdb.FDB;
+import com.apple.foundationdb.ReadTransaction;
 import com.apple.foundationdb.Transaction;
 import com.apple.foundationdb.record.provider.foundationdb.FDBRecordStore;
 import com.apple.foundationdb.record.provider.foundationdb.keyspace.DirectoryLayerDirectory;
@@ -16,6 +17,10 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public final class HelloFdbApp implements Runnable {
 
@@ -54,12 +59,31 @@ public final class HelloFdbApp implements Runnable {
     final FDB fdb = FDB.selectAPIVersion(620);
     log.info("[0] start; fdbVersion={}", fdb.getAPIVersion());
 
-    final Database db = fdb.open();
+    // NB: run configuration should have current directory set to `examples` directory root
+    final Database db = fdb.open("src/fdb/fdb-local/fdb.cluster");
+    log.info("[1] opened db with options={}", db.options());
+
+    db.read((ReadTransaction tr) -> {
+      CompletableFuture<byte[]> valFuture = tr.get(Bytes.toArray(ImmutableList.of(1, 2, 3)));
+      byte[] val = null;
+      try {
+        val = valFuture.get();
+      } catch (InterruptedException | ExecutionException e) {
+        System.out.println("error while obtaining a value:");
+        e.printStackTrace(System.out);
+      }
+      System.out.printf("got value: %s\n",
+          Optional.ofNullable(val).map(Bytes::asList));
+      return null;
+    });
+    log.info("[2] just ran the transaction x2");
+
     db.run((Transaction tr) -> {
       tr.set(Tuple.from("hello").pack(), Tuple.from("world").pack());
       tr.set(Bytes.toArray(ImmutableList.of(1, 2, 3)), new byte[]{4, 5});
       return null;
     });
+    log.info("[3] just ran the transaction x1");
   }
 
   // app configuration

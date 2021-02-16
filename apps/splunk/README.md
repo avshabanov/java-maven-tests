@@ -68,3 +68,18 @@ Time to complete (avg):
 ```
 sourcetype="db_audit" | stats avg(Duration) as TimeToComplete by Command | sort by - TimeToComplete
 ```
+
+Lookups (extending search with extra fields, permitting by-field lookups):
+
+```
+sourcetype="access_combined_wcookie" file=success.do status=200 | lookup products_lookup productId OUTPUT product_name as ProductName | stats count by ProductName
+```
+
+^ note, that ProductName is emerging as a result of this search.
+
+Lookups - use ProductName and Price extra fields from a separate file, output as total revenue based on log events:
+
+```
+sourcetype="access_combined_wcookie" file=cart.do | stats sum(Price) as Revenue by ProductName | sort - Revenue
+```
+
