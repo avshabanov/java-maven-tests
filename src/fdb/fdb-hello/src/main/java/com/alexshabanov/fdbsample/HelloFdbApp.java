@@ -63,27 +63,40 @@ public final class HelloFdbApp implements Runnable {
     final Database db = fdb.open("src/fdb/fdb-local/fdb.cluster");
     log.info("[1] opened db with options={}", db.options());
 
-    db.read((ReadTransaction tr) -> {
-      CompletableFuture<byte[]> valFuture = tr.get(Bytes.toArray(ImmutableList.of(1, 2, 3)));
-      byte[] val = null;
+    db.read((tr) -> {
+      final byte[] key = Tuple.from("hello").pack();
+      final CompletableFuture<byte[]> p = tr.get(key);
       try {
-        val = valFuture.get();
+        // in the fdb prompt the same result could be obtained via
+        // fdb> get "\x02hello\x00"
+        final String result = Tuple.fromBytes(p.get()).getString(0);
+        log.info("[1.1] prior read value for key={} is {}",
+            Optional.ofNullable(key).map(Bytes::asList), result);
       } catch (InterruptedException | ExecutionException e) {
-        System.out.println("error while obtaining a value:");
-        e.printStackTrace(System.out);
+        log.error("unable to obtaining a value", e);
       }
-      System.out.printf("got value: %s\n",
-          Optional.ofNullable(val).map(Bytes::asList));
       return null;
     });
-    log.info("[2] just ran the transaction x2");
 
     db.run((Transaction tr) -> {
       tr.set(Tuple.from("hello").pack(), Tuple.from("world").pack());
       tr.set(Bytes.toArray(ImmutableList.of(1, 2, 3)), new byte[]{4, 5});
       return null;
     });
-    log.info("[3] just ran the transaction x1");
+    log.info("[2] just ran the transaction x1");
+
+    db.read((tr) -> {
+      CompletableFuture<byte[]> valFuture = tr.get(Bytes.toArray(ImmutableList.of(1, 2, 3)));
+      byte[] val = null;
+      try {
+        val = valFuture.get();
+      } catch (InterruptedException | ExecutionException e) {
+        log.error("unable to obtaining a value", e);
+      }
+      log.info("got value: {}", Optional.ofNullable(val).map(Bytes::asList));
+      return null;
+    });
+    log.info("[3] just ran the transaction x2");
   }
 
   // app configuration
