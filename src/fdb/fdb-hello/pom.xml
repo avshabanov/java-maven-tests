@@ -41,6 +41,13 @@
       <version>6.2.22</version>
     </dependency>
 
+    <!-- BDB for in-memory testing -->
+    <dependency>
+      <groupId>com.sleepycat</groupId>
+      <artifactId>je</artifactId>
+      <version>5.0.73</version>
+    </dependency>
+
     <dependency>
       <groupId>org.foundationdb</groupId>
       <artifactId>fdb-record-layer-core</artifactId>

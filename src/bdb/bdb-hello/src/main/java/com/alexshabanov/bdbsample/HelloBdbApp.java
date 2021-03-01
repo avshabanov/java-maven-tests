@@ -4,14 +4,24 @@ import com.google.common.io.BaseEncoding;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.sleepycat.je.*;
+import com.sleepycat.je.Database;
+import com.sleepycat.je.DatabaseConfig;
+import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.je.Environment;
+import com.sleepycat.je.EnvironmentConfig;
+import com.sleepycat.je.LockMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public final class HelloBdbApp implements Runnable {
+  private static final boolean USE_SHM = Boolean.parseBoolean(System.getenv("USE_SHM"));
 
   private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -29,25 +39,7 @@ public final class HelloBdbApp implements Runnable {
     return BaseEncoding.base16().lowerCase().encode(bytes);
   }
 
-  private void runDb() throws Exception {
-    final File envHome = File.createTempFile("TestDB-", "-bdb");
-    final EnvironmentConfig environmentConfig = new EnvironmentConfig();
-    environmentConfig.setAllowCreate(true);
-    environmentConfig.setTransactional(true);
-    if (!envHome.delete()) {
-      log.debug("Can't delete old file");
-    }
-    if (!envHome.mkdir()) {
-      throw new IOException("Can't create " + envHome.getAbsolutePath());
-    }
-
-    final Environment env = new Environment(envHome, environmentConfig);
-    final DatabaseConfig dbConfig = new DatabaseConfig();
-    dbConfig.setTransactional(true);
-    dbConfig.setAllowCreate(true);
-    dbConfig.setSortedDuplicates(false);
-    final Database db = env.openDatabase(null, "mydatabase", dbConfig);
-
+  private void demo(Database db) {
     final DatabaseEntry entry = new DatabaseEntry("key".getBytes());
 
     // put 1
@@ -68,6 +60,42 @@ public final class HelloBdbApp implements Runnable {
     db.put(null, entry, value);
     db.get(null, entry, out, LockMode.DEFAULT);
     log.info("[3] out={} <-- Updated to new value", toHexString(out));
+  }
+
+  private void runDb() throws Exception {
+    final File envHome;
+    if (USE_SHM) {
+      // use shared memory
+      final List<Path> p = Files.list(Paths.get("/dev/shm")).collect(Collectors.toList());
+      log.info("shm contents={}", p);
+      envHome = new File("/dev/shm/tempbdb");
+      if (!envHome.mkdir()) {
+        throw new IllegalStateException("Unable to create shm directory to host BDB files");
+      }
+    } else {
+      // use plain old temp dir
+      envHome = Files.createTempDirectory("Test-BDB-").toFile();
+    }
+
+    log.info("Use env home={}", envHome.getAbsolutePath());
+
+    final EnvironmentConfig environmentConfig = new EnvironmentConfig();
+    environmentConfig.setAllowCreate(true);
+    environmentConfig.setTransactional(true);
+
+    final Environment env = new Environment(envHome, environmentConfig);
+    final DatabaseConfig dbConfig = new DatabaseConfig();
+    dbConfig.setTransactional(true);
+    dbConfig.setAllowCreate(true);
+    dbConfig.setSortedDuplicates(false);
+
+    try (Database db = env.openDatabase(null, "mydatabase", dbConfig)) {
+      demo(db);
+    } finally {
+      // delete envHome recursively
+      //noinspection ResultOfMethodCallIgnored
+      Files.walk(envHome.toPath()).map(Path::toFile).sorted((o1, o2) -> -o1.compareTo(o2)).forEach(File::delete);
+    }
   }
 
   private static String toHexString(DatabaseEntry entry) {
