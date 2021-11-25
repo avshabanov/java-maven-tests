@@ -18,7 +18,7 @@
         <!-- common libraries dependencies -->
         <hsqldb.version>1.8.0.7</hsqldb.version>
         <commons-dbcp.version>1.4</commons-dbcp.version>
-        <commons-collections.version>3.2.1</commons-collections.version>
+        <commons-collections.version>3.2.2</commons-collections.version>
         <hibernate3.version>3.2.0.ga</hibernate3.version>
         <jta.version>1.1</jta.version>
 
