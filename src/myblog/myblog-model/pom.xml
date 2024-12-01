@@ -18,7 +18,7 @@
 
         <spring.version>2.5.6</spring.version>
         <hsqldb.version>1.8.0.7</hsqldb.version>
-        <junit.version>4.7</junit.version>
+        <junit.version>4.13.1</junit.version>
 
         <commons-dbcp.version>1.4</commons-dbcp.version>
         <commons-collections.version>3.2.1</commons-collections.version>
