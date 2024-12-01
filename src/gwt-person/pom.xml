@@ -19,7 +19,7 @@
         <servlet-api.version>2.5</servlet-api.version>
         <jstl.version>1.1.2</jstl.version>
 
-        <junit.version>4.7</junit.version>
+        <junit.version>4.13.1</junit.version>
 
         <!--  tell the compiler we can use 1.5 -->
         <maven.compiler.source>1.5</maven.compiler.source>
