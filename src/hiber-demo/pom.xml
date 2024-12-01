@@ -12,7 +12,7 @@
         <spring.version>2.5.5</spring.version>
         <log4j.version>1.2.14</log4j.version>
         <hsqldb.version>1.8.0.7</hsqldb.version>
-        <junit.version>4.7</junit.version>
+        <junit.version>4.13.1</junit.version>
         <hibernate3.version>3.2.7.ga</hibernate3.version>
 
         <!--  compiler settings -->
